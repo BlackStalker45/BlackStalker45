@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,38 +8,38 @@
 </head>
 <body>
     <div id="difficulty-selector">
-        <h2>Выберите сложность:</h2>
-        <div class="difficulty-option" data-difficulty="6">1. Легкая</div>
-        <div class="difficulty-option" data-difficulty="8">2. Средняя</div>
-        <div class="difficulty-option" data-difficulty="10">3. Сложная</div>
+        <h2 id="difficulty-title">ВЫБЕРИТЕ СЛОЖНОСТЬ:</h2>
+        <div class="difficulty-option" data-difficulty="6">1. ЛЕГКАЯ</div>
+        <div class="difficulty-option" data-difficulty="8">2. СРЕДНЯЯ</div>
+        <div class="difficulty-option" data-difficulty="10">3. СЛОЖНАЯ</div>
     </div>
     
     <div class="container hidden" id="main-container">
-        <!-- First row -->
+        <!-- Первый ряд -->
         <div class="header">S.T.A.L.K.E.R</div>
         <div class="header">PDA(TM)</div>
         <div class="header">LOCK</div>
         <div class="header">PROTOCOL</div>
-        <div class="header"></div>
+        <div class="header">==</div>
         
-        <!-- Second row -->
+        <!-- Второй ряд -->
         <div class="header" id="lives-count">3</div>
         <div class="header">ПОПЫТОК</div>
         <div class="header">ОСТАЛОСЬ</div>
         <div class="header" id="lives-visual">[] [] []</div>
-        <div class="header"></div>
+        <div class="header">==</div>
         
-        <!-- Memory and words columns -->
+        <!-- Колонки с памятью и словами -->
         <div class="memory-column" id="memory-column-1"></div>
         <div class="words-column" id="words-column-1"></div>
         <div class="memory-column" id="memory-column-2"></div>
         <div class="words-column" id="words-column-2"></div>
         <div class="progress-column" id="progress-column"></div>
         
-        <!-- Input area -->
+        <!-- Поле ввода -->
         <div class="input-area">
-            <input type="text" id="user-input">
-            <button id="submit-btn">Enter</button>
+            <input type="text" id="user-input" placeholder="ВВЕДИТЕ КОД">
+            <button id="submit-btn">ВВОД</button>
         </div>
     </div>
 

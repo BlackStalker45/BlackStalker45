@@ -36,14 +36,14 @@ const data = {
                  "KINETICALLY", "LIMITLESSLY", "MAGNIFICENT", "NAVIGATING", "OPPORTUNITY"]
 };
 
-// Game state
+// Состояние игры
 let lives = 3;
 let selectedDifficulty = 6;
 let final = [];
 let answer = "";
-var outlineWords = [];
+let outlineWords = [];
 
-// DOM elements
+// Элементы DOM
 const difficultySelector = document.getElementById('difficulty-selector');
 const mainContainer = document.getElementById('main-container');
 const livesCount = document.getElementById('lives-count');
@@ -52,7 +52,7 @@ const progressColumn = document.getElementById('progress-column');
 const userInput = document.getElementById('user-input');
 const submitBtn = document.getElementById('submit-btn');
 
-// Memory addresses
+// Адреса памяти
 const memoryAddresses = [
     "0xF680", "0xF68C", "0xF698", "0xF634", "0xF64F", 
     "0xF6C7", "0xF680", "0xF670", "0xF6A7", "0xF689", 
@@ -60,63 +60,42 @@ const memoryAddresses = [
     "0xF6C6", "0xF6D3"
 ].join("\n");
 
-// Set up difficulty selection
+// Выбор сложности
 document.querySelectorAll('.difficulty-option').forEach(option => {
     option.addEventListener('click', () => {
+        // Звук клика
+        playSound('click');
+        
         selectedDifficulty = parseInt(option.dataset.difficulty);
-        // Generate words based on difficulty
         const result = generate(selectedDifficulty);
         final = result.final;
         answer = result.answer;
         outlineWords = result.outlineWords;
-		
-		console.log(final, answer, outlineWords);
-		
-		outlineWords.forEach(el => {
-			let correct = 0;
-			for (let i = 0; i < answer.length; i++) {
-				if (answer[i] === el[i]) {
-					correct++;
-				}
-			}
-			
-			console.log(el, el.length, "=", correct);
-		});
-		
+        
         startGame();
     });
 });
 
-// Функция генерации, аналогичная loader.py
+// Генерация слов
 function generate(selected_dif) {
     let selected_words = [];
     let outline_words = [];
     
-    // Выбираем слова в зависимости от сложности
     switch(selected_dif) {
-        case 6:
-            selected_words = data.words_easy;
-            break;
-        case 8:
-            selected_words = data.words_medium;
-            break;
-        case 10:
-            selected_words = data.words_hard;
-            break;
+        case 6: selected_words = data.words_easy; break;
+        case 8: selected_words = data.words_medium; break;
+        case 10: selected_words = data.words_hard; break;
     }
     
-    // Выбираем 6 случайных слов
     for (let i = 0; i < 6; i++) {
         outline_words.push(selected_words[Math.floor(Math.random() * selected_words.length)]);
     }
     
-    // Создаём строку из случайных символов
     let term_outline = '';
     for (let i = 0; i < 408; i++) {
         term_outline += data.trash_symbols[Math.floor(Math.random() * data.trash_symbols.length)];
     }
     
-    // Вставляем слова в случайные позиции
     let new_string = term_outline.split('');
     let indexes = [];
     for (let i = 0; i < 6; i++) {
@@ -130,30 +109,25 @@ function generate(selected_dif) {
         new_string.splice(start_index, word.length, ...word.split(''));
     }
     
-    // Выбираем правильный ответ
     const answer = outline_words[Math.floor(Math.random() * outline_words.length)].toUpperCase();
     const result = new_string.join('');
     
-    // Разбиваем на строки по 12 символов
-    let final = [];
+    const final = [];
     for (let i = 0; i < result.length; i += 12) {
-        final.push(result.substr(i, 12));
-    }	
-	final = final.map(el => el.toUpperCase())
-	
-    return { final, answer, outlineWords: outline_words };
+        final.push(result.substr(i, 12).toUpperCase());
+    }
+    
+    return { final, answer, outlineWords: outline_words.map(w => w.toUpperCase()) };
 }
 
-// Start the game with selected difficulty
+// Начало игры
 function startGame() {
     difficultySelector.classList.add('hidden');
     mainContainer.classList.remove('hidden');
     
-    // Set up memory columns
     document.getElementById('memory-column-1').textContent = memoryAddresses;
     document.getElementById('memory-column-2').textContent = memoryAddresses;
     
-    // Display words in two columns
     const half = Math.ceil(final.length / 2);
     const column1 = final.slice(0, half).join("\n");
     const column2 = final.slice(half).join("\n");
@@ -161,71 +135,109 @@ function startGame() {
     document.getElementById('words-column-1').textContent = column1;
     document.getElementById('words-column-2').textContent = column2;
     
-    // Set up lives display
     updateLivesDisplay();
-    
-    // Focus input
     userInput.focus();
+    
+    // Звук запуска PDA
+    playSound('start');
 }
 
-// Update lives display
+// Обновление отображения жизней
 function updateLivesDisplay() {
     livesCount.textContent = lives;
     livesVisual.textContent = "[] ".repeat(lives).trim();
 }
 
-// Handle submit
+// Обработка ввода
 submitBtn.addEventListener('click', handleSubmit);
 userInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        handleSubmit();
-    }
+    if (e.key === 'Enter') handleSubmit();
 });
 
-function handleSubmit() {
-    const userTry = userInput.value.trim() ;
-	console.log(outlineWords);
-    userInput.value = '';
-    
-    if (userTry === answer) {
-        progressColumn.textContent += `${userTry}\n>Вход в систему\n`;
-        setTimeout(() => {
-            alert("Доступ разрешен! Игра завершена.");
-            resetGame();
-        }, 500);
-    } else if (outlineWords.includes(userTry)) {
-        lives--;
-        updateLivesDisplay();
-        
-        // Calculate correct characters
-        let correct = 0;
-        for (let i = 0; i < answer.length; i++) {
-            if (answer[i] === userTry[i]) {
-                correct++;
-            }
-        }
-        
-        progressColumn.textContent += `${userTry}\n>Отказ в доступе\n${correct}/${answer.length} правильно\n`;
-        
-        if (lives <= 0) {
-            setTimeout(() => {
-                alert("Попытки исчерпаны! Доступ запрещен.");
-                resetGame();
-            }, 500);
-        }
-    } else {
-        progressColumn.textContent += `${userTry}\n>Ошибка\n`;
-    }
-}
-
-// Reset the game
-function resetGame() {
-    lives = 3;
-    progressColumn.textContent = "";
-    difficultySelector.classList.remove('hidden');
-    mainContainer.classList.add('hidden');
-}
-
+// Автоматический CAPS
 userInput.addEventListener('input', function() {
     this.value = this.value.toUpperCase();
 });
+
+function handleSubmit() {
+    const userTry = userInput.value.trim().toUpperCase();
+    if (!userTry) return;
+    
+    userInput.value = '';
+    playSound('keypress');
+    
+    if (userTry === answer) {
+        progressColumn.textContent += `${userTry}\n>ВХОД В СИСТЕМУ\n`;
+        playSound('success');
+        setTimeout(() => {
+            alert("ДОСТУП РАЗРЕШЕН! ИГРА ЗАВЕРШЕНА.");
+            resetGame();
+        }, 1000);
+    } else if (outlineWords.includes(userTry)) {
+        lives--;
+        updateLivesDisplay();
+        playSound('error');
+        
+        let correct = 0;
+        for (let i = 0; i < answer.length; i++) {
+            if (answer[i] === userTry[i]) correct++;
+        }
+        
+        progressColumn.textContent += `${userTry}\n>ОТКАЗ В ДОСТУПЕ\n${correct}/${answer.length} ПРАВИЛЬНО\n`;
+        
+        if (lives <= 0) {
+            setTimeout(() => {
+                playSound('fail');
+                alert("ПОПЫТКИ ИСЧЕРПАНЫ! ДОСТУП ЗАПРЕЩЕН.");
+                resetGame();
+            }, 1000);
+        }
+    } else {
+        progressColumn.textContent += `${userTry}\n>ОШИБКА\n`;
+        playSound('error');
+    }
+}
+
+// Сброс игры
+function resetGame() {
+    lives = 3;
+    progressColumn.textContent = "";
+    difficultySelector.style.opacity = 0;
+    difficultySelector.classList.remove('hidden');
+    mainContainer.classList.add('hidden');
+    
+    let opacity = 0;
+    const fadeIn = setInterval(() => {
+        opacity += 0.05;
+        difficultySelector.style.opacity = opacity;
+        if (opacity >= 1) clearInterval(fadeIn);
+    }, 30);
+}
+
+// Простые звуковые эффекты
+function playSound(type) {
+    const sounds = {
+        click: { freq: 800, duration: 0.1 },
+        keypress: { freq: 500, duration: 0.05 },
+        error: { freq: 300, duration: 0.3 },
+        success: { freq: 1000, duration: 0.5 },
+        fail: { freq: 200, duration: 1 },
+        start: { freq: 1200, duration: 0.2 }
+    };
+    
+    if (sounds[type]) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.type = 'square';
+        oscillator.frequency.value = sounds[type].freq;
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        oscillator.start();
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + sounds[type].duration);
+        oscillator.stop(audioCtx.currentTime + sounds[type].duration);
+    }
+}
