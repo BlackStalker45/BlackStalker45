@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.T.A.L.K.E.R. PDA</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="difficulty-selector">
+        <h2>Выберите сложность:</h2>
+        <div class="difficulty-option" data-difficulty="6">1. Легкая</div>
+        <div class="difficulty-option" data-difficulty="8">2. Средняя</div>
+        <div class="difficulty-option" data-difficulty="10">3. Сложная</div>
+    </div>
+    
+    <div class="container hidden" id="main-container">
+        <!-- First row -->
+        <div class="header">S.T.A.L.K.E.R</div>
+        <div class="header">PDA(TM)</div>
+        <div class="header">LOCK</div>
+        <div class="header">PROTOCOL</div>
+        <div class="header"></div>
+        
+        <!-- Second row -->
+        <div class="header" id="lives-count">3</div>
+        <div class="header">ПОПЫТОК</div>
+        <div class="header">ОСТАЛОСЬ</div>
+        <div class="header" id="lives-visual">[] [] []</div>
+        <div class="header"></div>
+        
+        <!-- Memory and words columns -->
+        <div class="memory-column" id="memory-column-1"></div>
+        <div class="words-column" id="words-column-1"></div>
+        <div class="memory-column" id="memory-column-2"></div>
+        <div class="words-column" id="words-column-2"></div>
+        <div class="progress-column" id="progress-column"></div>
+        
+        <!-- Input area -->
+        <div class="input-area">
+            <input type="text" id="user-input">
+            <button id="submit-btn">Enter</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
