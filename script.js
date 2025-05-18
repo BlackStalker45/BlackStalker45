@@ -56,7 +56,7 @@ const data = {
 
 // Состояние игры
 let lives = 3;
-let selectedDifficulty = 6;
+let selectedDifficulty = 8;
 let final = [];
 let answer = "";
 let outlineWords = [];
