@@ -105,7 +105,7 @@ function generate(selected_dif) {
         case 10: selected_words = data.words_hard; break;
     }
     
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
         outline_words.push(selected_words[Math.floor(Math.random() * selected_words.length)]);
     }
     
@@ -185,12 +185,22 @@ function handleSubmit() {
     playSound('keypress');
     
     if (userTry === answer) {
-        progressColumn.textContent += `${userTry}\n>ВХОД В СИСТЕМУ\n`;
-        playSound('success');
-        setTimeout(() => {
-            alert("ДОСТУП РАЗРЕШЕН! ИГРА ЗАВЕРШЕНА.");
-            resetGame();
-        }, 1000);
+    progressColumn.textContent += `${userTry}\n>ВХОД В СИСТЕМУ\n`;
+    playSound('success');
+    setTimeout(() => {
+        const now = new Date();
+        const formattedDateTime = now.toLocaleString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+        }).replace(',', '');
+
+        alert(`=== ДОСТУП РАЗРЕШЕН ===\n\n> СТАТУС: УСПЕШНО\n> ВРЕМЯ ЗАВЕРШЕНИЯ: ${formattedDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
+        resetGame();
+    }, 1000);
     } else if (outlineWords.includes(userTry)) {
         lives--;
         updateLivesDisplay();
