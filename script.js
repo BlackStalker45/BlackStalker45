@@ -94,6 +94,8 @@ document.querySelectorAll('.difficulty-option').forEach(option => {
     });
 });
 
+const countWords = 8;
+
 // Генерация слов
 function generate(selected_dif) {
     let selected_words = [];
@@ -105,7 +107,7 @@ function generate(selected_dif) {
         case 10: selected_words = data.words_hard; break;
     }
     
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < countWords; i++) {
         outline_words.push(selected_words[Math.floor(Math.random() * selected_words.length)]);
     }
     
@@ -116,7 +118,7 @@ function generate(selected_dif) {
     
     let new_string = term_outline.split('');
     let indexes = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < countWords; i++) {
         indexes.push(Math.floor(Math.random() * (408 - selected_dif)));
     }
     
@@ -188,21 +190,29 @@ function handleSubmit() {
     progressColumn.textContent += `${userTry}\n>ВХОД В СИСТЕМУ\n`;
     playSound('success');
     setTimeout(() => {
-        // Получаем текущее время и конвертируем в MSK (UTC+3)
-        const now = new Date();
-        const mskOffset = 3 * 60 * 60 * 1000; // Смещение MSK в миллисекундах
-        const mskTime = new Date(now.getTime() + mskOffset + (now.getTimezoneOffset() * 60 * 1000));
+        // Функция для конвертации в московское время (MSK, UTC+3)
+        const getMoscowTime = () => {
+            const now = new Date();
+            // Получаем текущее смещение UTC (в минутах)
+            const localOffset = now.getTimezoneOffset() * 60000;
+            // Московское время = UTC+3
+            const moscowOffset = 3 * 3600000;
+            // Создаем новую дату с московским временем
+            const moscowTime = new Date(now.getTime() + localOffset + moscowOffset);
+            
+            // Форматируем компоненты даты
+            const day = String(moscowTime.getDate()).padStart(2, '0');
+            const month = String(moscowTime.getMonth() + 1).padStart(2, '0');
+            const year = moscowTime.getFullYear();
+            const hours = String(moscowTime.getHours()).padStart(2, '0');
+            const minutes = String(moscowTime.getMinutes()).padStart(2, '0');
+            
+            return `${day}.${month}.${year} ${hours}:${minutes}`;
+        };
+
+        const moscowDateTime = getMoscowTime();
         
-        // Форматируем дату и время
-        const day = String(mskTime.getUTCDate()).padStart(2, '0');
-        const month = String(mskTime.getUTCMonth() + 1).padStart(2, '0');
-        const year = mskTime.getUTCFullYear();
-        const hours = String(mskTime.getUTCHours()).padStart(2, '0');
-        const minutes = String(mskTime.getUTCMinutes()).padStart(2, '0');
-        
-        const formattedDateTime = `${day}.${month}.${year} ${hours}:${minutes}`;
-        
-        alert(`=== ДОСТУП РАЗРЕШЕН ===\n\n> СТАТУС: УСПЕШНО\n> ВРЕМЯ ЗАВЕРШЕНИЯ: ${formattedDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
+        alert(`=== ДОСТУП РАЗРЕШЕН ===\n\n> СТАТУС: УСПЕШНО\n> МОСКОВСКОЕ ВРЕМЯ: ${moscowDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
         resetGame();
     }, 1000);
 } else if (outlineWords.includes(userTry)) {
