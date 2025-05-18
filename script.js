@@ -75,7 +75,7 @@ const data = {
 
 // Состояние игры
 let lives = 3;
-let selectedDifficulty = 8;
+let selectedDifficulty = 6;
 let final = [];
 let answer = "";
 let outlineWords = [];
@@ -100,11 +100,27 @@ const memoryAddresses = [
 // Выбор сложности
 document.querySelectorAll('.difficulty-option').forEach(option => {
     option.addEventListener('click', () => {
-        // Звук клика
         playSound('click');
         
         selectedDifficulty = parseInt(option.dataset.difficulty);
-        const result = generate(selectedDifficulty);
+        
+        // Устанавливаем количество слов в зависимости от сложности
+        let countWords;
+        switch(selectedDifficulty) {
+            case 6:  // Легкая
+                countWords = 6;  // Меньше слов
+                break;
+            case 8:  // Средняя
+                countWords = 8;  // Стандартное количество
+                break;
+            case 10: // Сложная
+                countWords = 10;  // Больше слов
+                break;
+            default:
+                countWords = 6;
+        }
+        
+        const result = generate(selectedDifficulty, countWords);
         final = result.final;
         answer = result.answer;
         outlineWords = result.outlineWords;
@@ -113,10 +129,8 @@ document.querySelectorAll('.difficulty-option').forEach(option => {
     });
 });
 
-const countWords = 8;
-
-// Генерация слов
-function generate(selected_dif) {
+// Генерация слов с разделителями
+function generate(selected_dif, countWords) {
     let selected_words = [];
     let outline_words = [];
     
@@ -126,37 +140,62 @@ function generate(selected_dif) {
         case 10: selected_words = data.words_hard; break;
     }
     
-    for (let i = 0; i < countWords; i++) {
-        outline_words.push(selected_words[Math.floor(Math.random() * selected_words.length)]);
-    }
+    // Выбираем уникальные слова
+    const shuffled = [...selected_words].sort(() => 0.5 - Math.random());
+    outline_words = shuffled.slice(0, countWords);
+    
+    // Параметры генерации в зависимости от сложности
+    const difficultyParams = {
+        6: { minGap: 30, maxGap: 90 },   // Легкая - больше пробелов
+        8: { minGap: 20, maxGap: 70 },   // Средняя
+        10: { minGap: 10, maxGap: 50 }   // Сложная - слова ближе друг к другу
+    };
+    
+    const { minGap, maxGap } = difficultyParams[selected_dif] || { minGap: 3, maxGap: 6 };
     
     let term_outline = '';
-    for (let i = 0; i < 408; i++) {
-        term_outline += data.trash_symbols[Math.floor(Math.random() * data.trash_symbols.length)];
+    const separators = data.trash_symbols;
+    let currentLength = 0;
+    
+    // Генерируем слова с разделителями
+    outline_words.forEach((word, index) => {
+        // Добавляем разделители перед словом (кроме первого)
+        if (index > 0) {
+            const gap = minGap + Math.floor(Math.random() * (maxGap - minGap + 1));
+            for (let i = 0; i < gap; i++) {
+                term_outline += separators[Math.floor(Math.random() * separators.length)];
+                currentLength++;
+            }
+        }
+        
+        // Добавляем само слово
+        term_outline += word;
+        currentLength += word.length;
+    });
+    
+    // Заполняем оставшееся пространство случайными символами
+    while (currentLength < 408) {
+        term_outline += separators[Math.floor(Math.random() * separators.length)];
+        currentLength++;
     }
     
-    let new_string = term_outline.split('');
-    let indexes = [];
-    for (let i = 0; i < countWords; i++) {
-        indexes.push(Math.floor(Math.random() * (408 - selected_dif)));
-    }
+    // Обрезаем лишнее
+    term_outline = term_outline.substring(0, 408);
     
-    for (let i = 0; i < outline_words.length; i++) {
-        const word = outline_words[i];
-        const start_index = indexes[i];
-        const end_index = start_index + word.length;
-        new_string.splice(start_index, word.length, ...word.split(''));
-    }
-    
+    // Выбираем ответ
     const answer = outline_words[Math.floor(Math.random() * outline_words.length)].toUpperCase();
-    const result = new_string.join('');
     
+    // Разбиваем на строки по 12 символов
     const final = [];
-    for (let i = 0; i < result.length; i += 12) {
-        final.push(result.substr(i, 12).toUpperCase());
+    for (let i = 0; i < term_outline.length; i += 12) {
+        final.push(term_outline.substr(i, 12).toUpperCase());
     }
     
-    return { final, answer, outlineWords: outline_words.map(w => w.toUpperCase()) };
+    return { 
+        final, 
+        answer, 
+        outlineWords: outline_words.map(w => w.toUpperCase()) 
+    };
 }
 
 // Начало игры
