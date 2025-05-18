@@ -212,7 +212,7 @@ function handleSubmit() {
 
         const moscowDateTime = getMoscowTime();
         
-        alert(`=== ДОСТУП РАЗРЕШЕН ===\n\n> СТАТУС: УСПЕШНО\n> ВРЕМЯ ВЫПОЛНЕНИЯ: ${moscowDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
+        alert(`=== ДОСТУП РАЗРЕШЕН ===\n\n> СТАТУС: УСПЕШНО\n> МОСКОВСКОЕ ВРЕМЯ: ${moscowDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
         resetGame();
     }, 1000);
 } else if (outlineWords.includes(userTry)) {
@@ -251,8 +251,8 @@ function handleSubmit() {
         };
 
         const moscowDateTime = getMoscowTime();
-		
-                alert(=== ДОСТУП ЗАПРЕЩЕН ===\n\n> СТАТУС: ОТКАЗ\n> ВРЕМЯ ВЫПОЛНЕНИЯ: ${moscowDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
+
+                alert(`=== ДОСТУП РАЗРЕШЕН ===\n\n> СТАТУС: УСПЕШНО\n> МОСКОВСКОЕ ВРЕМЯ: ${moscowDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
                 resetGame();
             }, 1000);
         }
