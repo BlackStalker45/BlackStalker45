@@ -188,20 +188,24 @@ function handleSubmit() {
     progressColumn.textContent += `${userTry}\n>ВХОД В СИСТЕМУ\n`;
     playSound('success');
     setTimeout(() => {
+        // Получаем текущее время и конвертируем в MSK (UTC+3)
         const now = new Date();
-        const formattedDateTime = now.toLocaleString('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-        }).replace(',', '');
-
+        const mskOffset = 3 * 60 * 60 * 1000; // Смещение MSK в миллисекундах
+        const mskTime = new Date(now.getTime() + mskOffset + (now.getTimezoneOffset() * 60 * 1000));
+        
+        // Форматируем дату и время
+        const day = String(mskTime.getUTCDate()).padStart(2, '0');
+        const month = String(mskTime.getUTCMonth() + 1).padStart(2, '0');
+        const year = mskTime.getUTCFullYear();
+        const hours = String(mskTime.getUTCHours()).padStart(2, '0');
+        const minutes = String(mskTime.getUTCMinutes()).padStart(2, '0');
+        
+        const formattedDateTime = `${day}.${month}.${year} ${hours}:${minutes}`;
+        
         alert(`=== ДОСТУП РАЗРЕШЕН ===\n\n> СТАТУС: УСПЕШНО\n> ВРЕМЯ ЗАВЕРШЕНИЯ: ${formattedDateTime}\n\n> ПРОТОКОЛ ЗАКРЫТ`);
         resetGame();
     }, 1000);
-    } else if (outlineWords.includes(userTry)) {
+} else if (outlineWords.includes(userTry)) {
         lives--;
         updateLivesDisplay();
         playSound('error');
